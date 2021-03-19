@@ -59,4 +59,16 @@ public class Tests {
         String o = "{\n" + "   \"foo\": \"bar\"\n" + "}";
         assertEquals("{\"foo\": \"bar\"}", Serializer.single(o));
     }
+
+    @Test
+    public void readSingle() {
+        JsonArray a = Parser.parse("1");
+        assertEquals("[1]", a.toString());
+    }
+
+    @Test
+    public void readMulti() {
+        JsonArray a = Parser.parse("1","2");
+        assertEquals("[1,2]", a.toString());
+    }
 }
