@@ -1,33 +1,82 @@
 package org.greenbytes.http.jfv;
 
+import javax.json.JsonArray;
 import javax.json.JsonValue;
 
 public class Serializer {
 
-    private static String convert(String input) {
-        StringBuilder result = new StringBuilder();
-
-        for (char c : input.toCharArray()) {
-            if (c >= 0x0 && c < 0x20) {
-                // Control characters
-                if (c == 0x9 || c == 0xa || c == 0xd) {
-                    result.append(' ');
-                } else {
-                    throw new RuntimeException("unexpected character: " + (int) c);
-                }
-            } else if (c >= 0x20 && c <= 0x7e) {
-                // VCHAR
-                result.append(c);
-            } else {
-                // non-ASCII
-                result.append(String.format("\\u%04x", (int) c));
-            }
+    private static CharSequence convert(String input) {
+        boolean needsConversion = false;
+        for (int i = 0; i < input.length() && !needsConversion; i++) {
+            char c = input.charAt(i);
+            needsConversion = c < ' ' || c > 0x7e;
         }
 
-        return result.toString();
+        if (!needsConversion) {
+            return input;
+        } else {
+            StringBuilder result = new StringBuilder();
+            boolean lastWasIgnorableWhiteSpace = false;
+
+            for (char c : input.toCharArray()) {
+                if (c >= 0x0 && c < 0x20) {
+                    // Control characters
+                    if (!(c == 0x9 || c == 0xa || c == 0xd)) {
+                        throw new RuntimeException("unexpected character: " + (int) c);
+                    }
+                    lastWasIgnorableWhiteSpace = true;
+                } else if (c == 0x20 && lastWasIgnorableWhiteSpace) {
+                    // skip
+                } else if (c >= 0x20 && c <= 0x7e) {
+                    // VCHAR
+                    result.append(c);
+                    lastWasIgnorableWhiteSpace = false;
+                } else {
+                    // non-ASCII
+                    result.append(String.format("\\u%04x", (int) c));
+                    lastWasIgnorableWhiteSpace = false;
+                }
+            }
+
+            return result;
+        }
     }
 
-    public static String serialize(JsonValue value) {
-        return convert(value.toString());
+    public static String single(JsonValue value) {
+        return convert(value.toString()).toString();
+    }
+
+    public static String single(String value) {
+        return convert(value).toString();
+    }
+
+    public static String list(JsonValue... values) {
+        if (values.length == 1) {
+            return single(values[0]);
+        } else {
+            StringBuilder sb = new StringBuilder();
+            String delim = "";
+            for (JsonValue value : values) {
+                sb.append(delim);
+                sb.append(convert(value.toString()));
+                delim = ", ";
+            }
+            return sb.toString();
+        }
+    }
+
+    public static String list(JsonArray array) {
+        if (array.size() == 1) {
+            return single(array.getValuesAs(JsonValue.class).get(0));
+        } else {
+            StringBuilder sb = new StringBuilder();
+            String delim = "";
+            for (JsonValue value : array.getValuesAs(JsonValue.class)) {
+                sb.append(delim);
+                sb.append(convert(value.toString()));
+                delim = ", ";
+            }
+            return sb.toString();
+        }
     }
 }
