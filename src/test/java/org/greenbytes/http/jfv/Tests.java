@@ -11,6 +11,8 @@ import org.junit.Test;
 
 public class Tests {
 
+    private Parser p = Parser.getInstance();
+
     @Test
     public void booleans() {
         assertEquals("false", Serializer.single(JsonValue.FALSE));
@@ -63,35 +65,35 @@ public class Tests {
 
     @Test
     public void readSingle() {
-        JsonArray a = Parser.parse("1");
+        JsonArray a = p.parse("1");
         assertEquals("[1]", a.toString());
     }
 
     @Test
     public void readMulti() {
-        JsonArray a = Parser.parse("1", "2");
+        JsonArray a = p.parse("1", "2");
         assertEquals("[1,2]", a.toString());
     }
 
     @Test(expected = JsonParsingException.class)
     public void readError() {
-        Parser.parse("a");
+        p.parse("a");
     }
 
     @Test(expected = JsonParsingException.class)
     public void readError2() {
-        Parser.parse("{\"foo\":\"bar\"");
+        p.parse("{\"foo\":\"bar\"");
     }
 
     @Test
     public void duplicateFieldNames() {
         // TODO: might also throw
-        JsonArray a = Parser.parse("{\"foo\":\"bar\", \"foo\":\"qux\"}");
+        JsonArray a = p.parse("{\"foo\":\"bar\", \"foo\":\"qux\"}");
         assertEquals("[{\"foo\":\"qux\"}]", a.toString());
     }
 
     @Test(expected = JsonParsingException.class)
     public void readError4() {
-        Parser.parse("1", ",");
+        p.parse("1", ",");
     }
 }
