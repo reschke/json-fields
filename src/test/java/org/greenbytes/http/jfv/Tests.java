@@ -19,6 +19,7 @@ import org.junit.runners.Parameterized;
 @RunWith(Parameterized.class)
 public class Tests {
 
+    private final JsonProvider j;
     private final Parser p;
 
     @Parameterized.Parameters(name = "{0}")
@@ -31,6 +32,7 @@ public class Tests {
     }
 
     public Tests(String name, JsonProvider provider) {
+        this.j = provider;
         this.p = new Parser(provider);
     }
 
@@ -71,9 +73,8 @@ public class Tests {
 
     @Test
     public void list() {
-        JsonArray value = Json.createArrayBuilder()
-                .add(Json.createObjectBuilder().add("type", "home").add("number", "212 555-1234"))
-                .add(Json.createObjectBuilder().add("type", "fax").add("number", "646 555-4567")).build();
+        JsonArray value = j.createArrayBuilder().add(j.createObjectBuilder().add("type", "home").add("number", "212 555-1234"))
+                .add(j.createObjectBuilder().add("type", "fax").add("number", "646 555-4567")).build();
         assertEquals("{\"type\":\"home\",\"number\":\"212 555-1234\"}, {\"type\":\"fax\",\"number\":\"646 555-4567\"}",
                 Serializer.list(value));
     }
