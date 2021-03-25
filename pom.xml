@@ -175,19 +175,19 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- JSON implementations: test dependency - choose one -->
+    <!-- JSON implementations: testing with multiple -->
     <dependency>
       <groupId>org.apache.johnzon</groupId>
       <artifactId>johnzon-core</artifactId>
       <version>1.2.10</version>
       <scope>test</scope>
     </dependency>
-    <!--<dependency>
+    <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>javax.json</artifactId>
       <version>1.1.4</version>
       <scope>test</scope>
-    </dependency>-->
+    </dependency>
   </dependencies>
 
   <scm>

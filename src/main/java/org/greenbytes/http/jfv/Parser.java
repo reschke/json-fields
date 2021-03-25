@@ -16,6 +16,10 @@ public class Parser {
         this.jp = JsonProvider.provider();
     }
 
+    public Parser(JsonProvider provider) {
+        this.jp = provider;
+    }
+
     public static Parser getInstance() {
         return INSTANCE;
     }

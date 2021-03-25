@@ -2,16 +2,37 @@ package org.greenbytes.http.jfv;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParsingException;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
+@RunWith(Parameterized.class)
 public class Tests {
 
-    private Parser p = Parser.getInstance();
+    private final Parser p;
+
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<Object[]> parameters() {
+        List<Object[]> result = new ArrayList<>();
+        result.add(new Object[] { "default", JsonProvider.provider() });
+        result.add(new Object[] { "glassfish", org.glassfish.json.JsonProviderImpl.provider() });
+        result.add(new Object[] { "johnzon", org.apache.johnzon.core.JsonProviderImpl.provider() });
+        return result;
+    }
+
+    public Tests(String name, JsonProvider provider) {
+        this.p = new Parser(provider);
+    }
 
     @Test
     public void booleans() {
