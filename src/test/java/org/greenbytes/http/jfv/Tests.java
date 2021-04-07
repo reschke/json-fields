@@ -120,6 +120,12 @@ public class Tests {
         assertEquals("[1,2]", a.toString());
     }
 
+    @Test
+    public void readArrays() {
+        JsonArray a = strictp.parse("[1,2]", "[3,[4,5]]");
+        assertEquals("[[1,2],[3,[4,5]]]", a.toString());
+    }
+
     @Test(expected = JsonParsingException.class)
     public void readError() {
         strictp.parse("a");
