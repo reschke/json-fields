@@ -3,6 +3,7 @@ package org.greenbytes.http.jfv;
 import static org.junit.Assert.assertEquals;
 
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,6 +18,7 @@ import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParsingException;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -46,7 +48,6 @@ public class Tests {
     @Test
     public void booleans() {
         assertEquals("false", Serializer.single(JsonValue.FALSE));
-        assertEquals("true", Serializer.single(JsonValue.TRUE));
         assertEquals("true", Serializer.single(JsonValue.TRUE));
     }
 
@@ -84,6 +85,7 @@ public class Tests {
                 .add(j.createObjectBuilder().add("type", "fax").add("number", "646 555-4567")).build();
         assertEquals("{\"type\":\"home\",\"number\":\"212 555-1234\"}, {\"type\":\"fax\",\"number\":\"646 555-4567\"}",
                 Serializer.list(value));
+        Serializer.check(value);
     }
 
     @Test
@@ -219,5 +221,30 @@ public class Tests {
     @Test(expected = JsonException.class)
     public void brokenSurrogate2() {
         strictp.parse("\"x\\uD800\\uD800\"");
+    }
+
+    // IJson constraints
+    @Test
+    public void brokenStrings() {
+        String tests[] = new String[] { "foo\ud800", "\ud800foo", "bar\ud800foo", "\ud800\ud800", "\udead\ud800" };
+        for (String test : tests) {
+            try {
+                Serializer.check(Json.createValue(test));
+                Assert.fail("exception expected");
+            } catch (JsonException expected) {
+            }
+        }
+    }
+
+    @Test
+    public void brokenNumbers() {
+        String tests[] = new String[] { "3.141592653589793238462643383279", "1E400" };
+        for (String test : tests) {
+            try {
+                Serializer.check(Json.createValue(new BigDecimal(test)));
+                Assert.fail("exception expected");
+            } catch (JsonException expected) {
+            }
+        }
     }
 }

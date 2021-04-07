@@ -1,6 +1,11 @@
 package org.greenbytes.http.jfv;
 
+import java.util.Map;
+
 import javax.json.JsonArray;
+import javax.json.JsonNumber;
+import javax.json.JsonObject;
+import javax.json.JsonString;
 import javax.json.JsonValue;
 
 public class Serializer {
@@ -78,5 +83,25 @@ public class Serializer {
             }
             return sb.toString();
         }
+    }
+
+    public static JsonValue check(JsonValue value) {
+
+        if (value instanceof JsonNumber) {
+            IJsonConstraints.check((JsonNumber) value);
+        } else if (value instanceof JsonString) {
+            IJsonConstraints.check(((JsonString) value).getString());
+        } else if (value instanceof JsonArray) {
+            for (JsonValue v : (JsonArray) value) {
+                check(v);
+            }
+        } else if (value instanceof JsonObject) {
+            for (Map.Entry<String, JsonValue> entry : ((JsonObject) value).entrySet()) {
+                IJsonConstraints.check(entry.getKey());
+                check(entry.getValue());
+            }
+        }
+
+        return value;
     }
 }
