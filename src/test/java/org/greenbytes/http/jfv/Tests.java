@@ -173,4 +173,14 @@ public class Tests {
     public void readError6() {
         p.parse(" 1 2 ");
     }
+
+    @Test(expected = JsonException.class)
+    public void hugePrecision() {
+        strictp.parse("3.141592653589793238462643383279");
+    }
+
+    @Test(expected = JsonException.class)
+    public void hugeNumber() {
+        strictp.parse("1E400");
+    }
 }

@@ -1,12 +1,14 @@
 package org.greenbytes.http.jfv;
 
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonException;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
@@ -112,7 +114,7 @@ public class Parser {
             case VALUE_NULL:
             case VALUE_NUMBER:
             case VALUE_STRING:
-                return parser.getValue();
+                return check(parser.getValue());
             case START_OBJECT:
                 return readObject(parser);
             case START_ARRAY:
@@ -120,5 +122,17 @@ public class Parser {
             default:
                 throw new JsonException("Unexpected parse event: " + event);
         }
+    }
+
+    private JsonValue check(JsonValue value) {
+        if (this.strict && value instanceof JsonNumber) {
+            JsonNumber number = (JsonNumber) value;
+            double d = number.doubleValue();
+            if (!(Double.isFinite(d)) || !number.bigDecimalValue().equals(BigDecimal.valueOf(number.doubleValue()))) {
+                throw new JsonException("Number exceeds size/precision: " + number);
+            }
+        }
+
+        return value;
     }
 }
