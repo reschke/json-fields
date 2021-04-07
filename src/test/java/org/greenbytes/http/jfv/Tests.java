@@ -183,4 +183,9 @@ public class Tests {
     public void hugeNumber() {
         strictp.parse("1E400");
     }
+
+    @Test(expected = JsonException.class)
+    public void unpairedSurrogate() {
+        strictp.parse("\"x\\\uDEADy\"");
+    }
 }
