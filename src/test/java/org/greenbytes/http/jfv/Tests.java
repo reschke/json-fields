@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonException;
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonGenerator;
@@ -25,6 +26,7 @@ public class Tests {
 
     private final JsonProvider j;
     private final Parser p;
+    private final Parser strictp;
 
     @Parameterized.Parameters(name = "{0}")
     public static Collection<Object[]> parameters() {
@@ -37,7 +39,8 @@ public class Tests {
 
     public Tests(String name, JsonProvider provider) {
         this.j = provider;
-        this.p = new Parser(provider);
+        this.p = new Parser(provider, false);
+        this.strictp = new Parser(provider, true);
     }
 
     @Test
@@ -134,8 +137,40 @@ public class Tests {
         assertEquals("[{\"foo\":\"qux\"}]", a.toString());
     }
 
+    @Test
+    public void duplicateFieldNamesNested() {
+        // TODO: might also throw
+        JsonArray a = p.parse("{ \"x\" : {\"foo\":\"bar\", \"foo\":\"qux\"} }");
+        assertEquals("[{\"x\":{\"foo\":\"qux\"}}]", a.toString());
+    }
+
+    @Test(expected = JsonException.class)
+    public void duplicateFieldNamesStrict() {
+        strictp.parse("{\"foo\":\"bar\", \"foo\":\"qux\"}");
+    }
+
+    @Test(expected = JsonException.class)
+    public void duplicateFieldNamesNestedStrict() {
+        strictp.parse("{ \"x\" : {\"foo\":\"bar\", \"foo\":\"qux\"} }");
+    }
+
+    @Test(expected = JsonException.class)
+    public void duplicateFieldNamesNested2Strict() {
+        strictp.parse("[ {\"foo\":\"bar\", \"foo\":\"qux\"} ]");
+    }
+
     @Test(expected = JsonParsingException.class)
     public void readError4() {
         p.parse("1", ",");
+    }
+
+    @Test(expected = JsonParsingException.class)
+    public void readError5() {
+        p.parse("1]");
+    }
+
+    @Test(expected = JsonParsingException.class)
+    public void readError6() {
+        p.parse(" 1 2 ");
     }
 }
