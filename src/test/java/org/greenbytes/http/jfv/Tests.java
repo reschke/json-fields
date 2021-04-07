@@ -110,24 +110,24 @@ public class Tests {
 
     @Test
     public void readSingle() {
-        JsonArray a = p.parse("1");
+        JsonArray a = strictp.parse("1");
         assertEquals("[1]", a.toString());
     }
 
     @Test
     public void readMulti() {
-        JsonArray a = p.parse("1", "2");
+        JsonArray a = strictp.parse("1", "2");
         assertEquals("[1,2]", a.toString());
     }
 
     @Test(expected = JsonParsingException.class)
     public void readError() {
-        p.parse("a");
+        strictp.parse("a");
     }
 
     @Test(expected = JsonParsingException.class)
     public void readError2() {
-        p.parse("{\"foo\":\"bar\"");
+        strictp.parse("{\"foo\":\"bar\"");
     }
 
     @Test
@@ -184,8 +184,34 @@ public class Tests {
         strictp.parse("1E400");
     }
 
+    @Test
+    public void surrogate() {
+        JsonArray a = strictp.parse("\"x\\uD800\\uDEADy\"");
+        assertEquals("[\"x\ud800\udeady\"]", a.toString());
+    }
+
     @Test(expected = JsonException.class)
     public void unpairedSurrogate() {
-        strictp.parse("\"x\\\uDEADy\"");
+        strictp.parse("\"x\\uDEADy\"");
+    }
+
+    @Test(expected = JsonException.class)
+    public void unpairedSurrogate2() {
+        strictp.parse("\"x\\uDEAD\"");
+    }
+
+    @Test(expected = JsonException.class)
+    public void unpairedSurrogate3() {
+        strictp.parse("\"x\\uD800\"");
+    }
+
+    @Test(expected = JsonException.class)
+    public void brokenSurrogate() {
+        strictp.parse("\"x\\uDEAD\\uDEADy\"");
+    }
+
+    @Test(expected = JsonException.class)
+    public void brokenSurrogate2() {
+        strictp.parse("\"x\\uD800\\uD800\"");
     }
 }

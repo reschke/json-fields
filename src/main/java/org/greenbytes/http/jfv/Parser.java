@@ -1,7 +1,6 @@
 package org.greenbytes.http.jfv;
 
 import java.io.StringReader;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,8 +66,8 @@ public class Parser {
             switch (event) {
                 case KEY_NAME:
                     String name = parser.getString();
-                    if (this.strict && ret.containsKey(check(name))) {
-                        throw new JsonException("duplicate key: '" + name + "'");
+                    if (this.strict && ret.containsKey(IJsonConstraints.check(name))) {
+                        throw new IJsonConstraints.IJsonConstraintViolationException("duplicate key: '" + name + "'");
                     }
                     JsonValue value = readItem(parser, parser.next());
                     ret.put(name, value);
@@ -128,46 +127,13 @@ public class Parser {
     private JsonValue check(JsonValue value) {
         if (this.strict) {
             if (value instanceof JsonNumber) {
-                check((JsonNumber) value);
+                IJsonConstraints.check((JsonNumber) value);
             } else if (value instanceof JsonString) {
-                check(((JsonString) value).getString());
+                IJsonConstraints.check(((JsonString) value).getString());
             }
         }
 
         return value;
     }
 
-    private static String check(String value) {
-        boolean expectLow = false;
-        for (int i = 0; i < value.length(); i++) {
-            char c = value.charAt(i);
-            if (Character.isSurrogate(c)) {
-                if (expectLow) {
-                    if (!Character.isLowSurrogate(c)) {
-                        throw new JsonException("Invalid surrogate at position " + i + " of '" + value + "'");
-                    }
-                    expectLow = false;
-                } else {
-                    if (!Character.isHighSurrogate(c)) {
-                        throw new JsonException("Invalid surrogate at position " + i + " of '" + value + "'");
-                    }
-                    expectLow = true;
-                }
-            }
-        }
-
-        if (expectLow) {
-            throw new JsonException("Invalid surrogate at end of '" + value + "'");
-        }
-
-        return value;
-    }
-
-    private JsonNumber check(JsonNumber number) {
-        double d = number.doubleValue();
-        if (!(Double.isFinite(d)) || !number.bigDecimalValue().equals(BigDecimal.valueOf(number.doubleValue()))) {
-            throw new JsonException("Number exceeds size/precision: " + number);
-        }
-        return number;
-    }
 }
