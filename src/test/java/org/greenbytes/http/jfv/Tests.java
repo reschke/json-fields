@@ -193,6 +193,11 @@ public class Tests {
     }
 
     @Test
+    public void hugeNumber2() {
+        p.parse("1E400");
+    }
+
+    @Test
     public void surrogate() {
         JsonArray a = strictp.parse("\"x\\uD800\\uDEADy\"");
         assertEquals("[\"x\ud800\udeady\"]", a.toString());
