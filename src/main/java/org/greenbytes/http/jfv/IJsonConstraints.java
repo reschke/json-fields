@@ -5,19 +5,19 @@ import java.math.BigDecimal;
 import javax.json.JsonException;
 import javax.json.JsonNumber;
 
+/**
+ * Implements checker methods for the contraints defined in IETF RFC 7493 ("The I-JSON Message Format")
+ * 
+ * @see <a href="https://greenbytes.de/tech/webdav/rfc7493.html">RFC 7493: The I-JSON Message Format</a>
+ */
 public class IJsonConstraints {
 
-    public static JsonNumber check(JsonNumber number) {
-        double d = number.doubleValue();
-        if (!Double.isFinite(d)) {
-            throw new IJsonConstraintViolationException("Not a number: " + number);
-        } else if (!number.bigDecimalValue().stripTrailingZeros().equals(BigDecimal.valueOf(d).stripTrailingZeros())) {
-            throw new IJsonConstraintViolationException("Number exceeds size/precision: " + number);
-        }
-        return number;
-    }
-
-    public static String check(String value) {
+    /**
+     * Check string for invalid characters, throws in case of error.
+     * 
+     * @see <a href="https://greenbytes.de/tech/webdav/rfc7493.html#rfc.section.2.1">RFC 7493, Section 2.1</a>
+     */
+    public static String check(String value) throws IJsonConstraintViolationException {
         boolean expectLow = false;
         for (int i = 0; i < value.length(); i++) {
             char c = value.charAt(i);
@@ -41,6 +41,21 @@ public class IJsonConstraints {
         }
 
         return value;
+    }
+
+    /**
+     * Check number for compatibility with IEEE 754-2008 binary64.
+     * 
+     * @see <a href="https://greenbytes.de/tech/webdav/rfc7493.html#rfc.section.2.2">RFC 7493, Section 2.2</a>
+     */
+    public static JsonNumber check(JsonNumber number) {
+        double d = number.doubleValue();
+        if (!Double.isFinite(d)) {
+            throw new IJsonConstraintViolationException("Not a number: " + number);
+        } else if (!number.bigDecimalValue().stripTrailingZeros().equals(BigDecimal.valueOf(d).stripTrailingZeros())) {
+            throw new IJsonConstraintViolationException("Number exceeds size/precision: " + number);
+        }
+        return number;
     }
 
     public static class IJsonConstraintViolationException extends JsonException {
