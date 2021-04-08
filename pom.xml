@@ -116,6 +116,11 @@
       </plugin>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <links>
+            <link>https://javadoc.io/static/javax.json/javax.json-api/1.1.4</link>
+          </links>
+        </configuration>
         <executions>
           <execution>
             <id>attach-javadocs</id>
