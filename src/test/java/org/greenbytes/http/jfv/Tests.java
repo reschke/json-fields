@@ -227,17 +227,4 @@ public class Tests {
     public void brokenSurrogate2() {
         strictp.parse("\"x\\uD800\\uD800\"");
     }
-
-    // IJson constraints
-    @Test
-    public void brokenStrings() {
-        String tests[] = new String[] { "foo\ud800", "\ud800foo", "bar\ud800foo", "\ud800\ud800", "\udead\ud800" };
-        for (String test : tests) {
-            try {
-                Serializer.check(Json.createValue(test));
-                Assert.fail("exception expected");
-            } catch (JsonException expected) {
-            }
-        }
-    }
 }

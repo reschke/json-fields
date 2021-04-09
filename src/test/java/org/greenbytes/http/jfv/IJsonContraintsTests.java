@@ -5,8 +5,10 @@ import static org.junit.Assert.fail;
 import java.math.BigDecimal;
 
 import javax.json.Json;
+import javax.json.JsonException;
 
 import org.greenbytes.http.jfv.IJsonConstraints.IJsonConstraintViolationException;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class IJsonContraintsTests {
@@ -44,6 +46,18 @@ public class IJsonContraintsTests {
 
         for (double test : tests) {
             IJsonConstraints.check(Json.createValue(test));
+        }
+    }
+
+    @Test
+    public void brokenStrings() {
+        String tests[] = new String[] { "foo\ud800", "\ud800foo", "bar\ud800foo", "\ud800\ud800", "\udead\ud800" };
+        for (String test : tests) {
+            try {
+                IJsonConstraints.check(test);
+                Assert.fail("exception expected");
+            } catch (IJsonConstraintViolationException expected) {
+            }
         }
     }
 }
