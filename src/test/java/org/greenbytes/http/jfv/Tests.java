@@ -240,16 +240,4 @@ public class Tests {
             }
         }
     }
-
-    @Test
-    public void brokenNumbers() {
-        String tests[] = new String[] { "3.141592653589793238462643383279", "1E400" };
-        for (String test : tests) {
-            try {
-                Serializer.check(Json.createValue(new BigDecimal(test)));
-                Assert.fail("exception expected");
-            } catch (JsonException expected) {
-            }
-        }
-    }
 }
