@@ -3,7 +3,6 @@ package org.greenbytes.http.jfv;
 import static org.junit.Assert.assertEquals;
 
 import java.io.StringWriter;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,7 +17,6 @@ import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParsingException;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -180,6 +178,11 @@ public class Tests {
     @Test(expected = JsonParsingException.class)
     public void readError6() {
         p.parse(" 1 2 ");
+    }
+
+    @Test(expected = JsonParsingException.class)
+    public void readError7() {
+        p.parse("{ ] }");
     }
 
     @Test(expected = JsonException.class)
