@@ -14,6 +14,8 @@ public class IJsonConstraints {
 
     /**
      * Check string for invalid characters, throws in case of error.
+     * @param value string to check
+     * @return checked string value
      * 
      * @see <a href="https://greenbytes.de/tech/webdav/rfc7493.html#rfc.section.2.1">RFC 7493, Section 2.1</a>
      */
@@ -45,6 +47,8 @@ public class IJsonConstraints {
 
     /**
      * Check number for compatibility with IEEE 754-2008 binary64.
+     * @param number number to check
+     * @return checked number
      * 
      * @see <a href="https://greenbytes.de/tech/webdav/rfc7493.html#rfc.section.2.2">RFC 7493, Section 2.2</a>
      */
