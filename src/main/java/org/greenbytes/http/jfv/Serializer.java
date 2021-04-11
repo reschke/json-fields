@@ -10,41 +10,8 @@ import javax.json.JsonValue;
 
 public class Serializer {
 
-    private static CharSequence convert(String input) {
-        boolean needsConversion = false;
-        for (int i = 0; i < input.length() && !needsConversion; i++) {
-            char c = input.charAt(i);
-            needsConversion = c < ' ' || c > 0x7e;
-        }
-
-        if (!needsConversion) {
-            return input;
-        } else {
-            StringBuilder result = new StringBuilder();
-            boolean lastWasIgnorableWhiteSpace = false;
-
-            for (char c : input.toCharArray()) {
-                if (c >= 0x0 && c < 0x20) {
-                    // Control characters
-                    if (!(c == 0x9 || c == 0xa || c == 0xd)) {
-                        throw new RuntimeException("unexpected character: " + (int) c);
-                    }
-                    lastWasIgnorableWhiteSpace = true;
-                } else if (c == 0x20 && lastWasIgnorableWhiteSpace) {
-                    // skip
-                } else if (c >= 0x20 && c <= 0x7e) {
-                    // VCHAR
-                    result.append(c);
-                    lastWasIgnorableWhiteSpace = false;
-                } else {
-                    // non-ASCII
-                    result.append(String.format("\\u%04x", (int) c));
-                    lastWasIgnorableWhiteSpace = false;
-                }
-            }
-
-            return result;
-        }
+    private static String convert(String input) {
+        return IJsonConstraints.check(input, true);
     }
 
     public static String single(JsonValue value) {

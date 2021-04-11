@@ -19,17 +19,24 @@ public class IJsonConstraints {
      * 
      * @param value
      *            string to check
-     * @return checked string value
+     * @param convertNonVChar
+     *            set to true to convert non-VCHAR characters string to check
+     * @return checked and potentially converted string value
      * 
      * @see <a href=
      *      "https://greenbytes.de/tech/webdav/rfc7493.html#rfc.section.2.1">RFC
      *      7493, Section 2.1</a>
      */
-    public static String check(String value) throws IJsonConstraintViolationException {
+    public static String check(String value, boolean convertNonVChar) throws IJsonConstraintViolationException {
+
         boolean expectLow = false;
         boolean inEscapeSequence = false;
+        boolean needsConversion = false;
+
         for (int i = 0; i < value.length(); i++) {
             char c = value.charAt(i);
+            needsConversion |= c < ' ' || c > 0x7e;
+
             if (!inEscapeSequence && c == '\\') {
                 inEscapeSequence = true;
             } else if (inEscapeSequence) {
@@ -66,7 +73,49 @@ public class IJsonConstraints {
             throw new IJsonConstraintViolationException("Incomplete escape sequence at end of '" + value + "'");
         }
 
-        return value;
+        if (needsConversion) {
+            StringBuilder result = new StringBuilder();
+            boolean lastWasIgnorableWhiteSpace = false;
+
+            for (char c : value.toCharArray()) {
+                if (c >= 0x0 && c < 0x20) {
+                    // Control characters
+                    if (!(c == 0x9 || c == 0xa || c == 0xd)) {
+                        throw new IJsonConstraintViolationException("unexpected character: " + (int) c);
+                    }
+                    lastWasIgnorableWhiteSpace = true;
+                } else if (c == 0x20 && lastWasIgnorableWhiteSpace) {
+                    // skip
+                } else if (c >= 0x20 && c <= 0x7e) {
+                    // VCHAR
+                    result.append(c);
+                    lastWasIgnorableWhiteSpace = false;
+                } else {
+                    // non-ASCII
+                    result.append(String.format("\\u%04x", (int) c));
+                    lastWasIgnorableWhiteSpace = false;
+                }
+            }
+
+            return result.toString();
+        } else {
+            return value;
+        }
+    }
+
+    /**
+     * Check string for invalid characters, throws in case of error.
+     * 
+     * @param value
+     *            string to check
+     * @return checked string value
+     * 
+     * @see <a href=
+     *      "https://greenbytes.de/tech/webdav/rfc7493.html#rfc.section.2.1">RFC
+     *      7493, Section 2.1</a>
+     */
+    public static String check(String value) throws IJsonConstraintViolationException {
+        return check(value, false);
     }
 
     /**
