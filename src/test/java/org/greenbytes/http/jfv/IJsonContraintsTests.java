@@ -5,7 +5,6 @@ import static org.junit.Assert.fail;
 import java.math.BigDecimal;
 
 import javax.json.Json;
-import javax.json.JsonException;
 
 import org.greenbytes.http.jfv.IJsonConstraints.IJsonConstraintViolationException;
 import org.junit.Assert;
@@ -56,6 +55,19 @@ public class IJsonContraintsTests {
             try {
                 IJsonConstraints.check(test);
                 Assert.fail("exception expected");
+            } catch (IJsonConstraintViolationException expected) {
+            }
+        }
+    }
+
+    @Test
+    public void brokenStringsEscaped() {
+        String tests[] = new String[] { "foo\\ud800", "\\ud800foo", "bar\\ud800foo", "\\ud800\\ud800", "\\udead\\ud800",
+                "incomplete\\" };
+        for (String test : tests) {
+            try {
+                IJsonConstraints.check(test);
+                Assert.fail("exception expected for: " + test);
             } catch (IJsonConstraintViolationException expected) {
             }
         }
