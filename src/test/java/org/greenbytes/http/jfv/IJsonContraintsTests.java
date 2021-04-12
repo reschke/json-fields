@@ -1,10 +1,12 @@
 package org.greenbytes.http.jfv;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonException;
 
 import org.greenbytes.http.jfv.IJsonConstraints.IJsonConstraintViolationException;
@@ -50,8 +52,28 @@ public class IJsonContraintsTests {
     }
 
     @Test
-    public void brokenStrings() {
+    public void surrogates() {
+        String tests[] = new String[] { "\uD800\uDEAD" };
+        for (String test : tests) {
+            IJsonConstraints.check(test);
+        }
+    }
+
+    @Test
+    public void brokenSurrogates() {
         String tests[] = new String[] { "foo\ud800", "\ud800foo", "bar\ud800foo", "\ud800\ud800", "\udead\ud800" };
+        for (String test : tests) {
+            try {
+                IJsonConstraints.check(test);
+                Assert.fail("exception expected");
+            } catch (IJsonConstraintViolationException expected) {
+            }
+        }
+    }
+
+    @Test
+    public void nonCharacters() {
+        String tests[] = new String[] { "\ufdd0", "\ufdef", "\udbff\udfff" };
         for (String test : tests) {
             try {
                 IJsonConstraints.check(test);
