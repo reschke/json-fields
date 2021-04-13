@@ -59,7 +59,6 @@ public class IJsonConstraints {
         if ((c >= 0xfdd0 && c <= 0xfdef) || l == 0xfffe || l == 0xffff) {
             throw new IJsonConstraintViolationException(String.format("Noncharacter \\u%04x at position %d", c, pos));
         }
-        System.err.println(String.format("Noncharacter \\u%04x at position %d", c, pos));
     }
 
     /**
