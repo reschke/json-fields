@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="US-ASCII"?>
-<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<?xml-stylesheet type='text/xsl' href='rfcxml.xslt' ?>
 <?rfc toc="yes"?>
 <?rfc symrefs="yes"?>
 <?rfc sortrefs="yes"?>
@@ -10,7 +10,7 @@
 <?rfc rfcedstyle="yes"?>
 <?rfc-ext allow-markup-in-artwork="yes" ?>
 <?rfc-ext html-pretty-print="prettyprint https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"?>
-<?rfc-ext xml2rfc-backend="202007"?>
+<?rfc private="A JSON Encoding for HTTP Field Values"?>
 
 <!DOCTYPE rfc [
   <!ENTITY mdash "&#8212;">
@@ -31,9 +31,7 @@
 
 <rfc xmlns:x="http://purl.org/net/xml2rfc/ext"
      xmlns:xi="http://www.w3.org/2001/XInclude"
-     ipr="trust200902" docName="draft-reschke-http-jfv-16" category="info" version="3">
-
-  <x:feedback template="mailto:ietf-http-wg@w3.org?subject={docname},%20%22{section}%22&amp;body=&lt;{ref}&gt;:"/>
+     version="3">
 
 	<front>
   <title>A JSON Encoding for HTTP Field Values</title>
@@ -50,9 +48,8 @@
     </address>
   </author>
 
-  <date year="2025" month="March" day="17"/>
+  <date year="2025" month="April" day="18"/>
 
-  <area>Applications and Real-Time</area>
   <keyword>HTTP</keyword>
   <keyword>JSON</keyword>
   <keyword>Field Value</keyword>
@@ -65,24 +62,11 @@
   </abstract>
 
 
-  <note title="Editorial Note" removeInRFC="true">
+  <note title="Editorial Note">
     <t>
-      Distribution of this document is unlimited. Although this is not a work
-      item of the HTTPbis Working Group, comments should be sent to the
-      Hypertext Transfer Protocol (HTTP) mailing list at <eref target="mailto:ietf-http-wg@w3.org">ietf-http-wg@w3.org</eref>,
-      which may be joined by sending a message with subject
-      "subscribe" to <eref target="mailto:ietf-http-wg-request@w3.org?subject=subscribe">ietf-http-wg-request@w3.org</eref>.
-    </t>
-    <t>
-      Discussions of the HTTPbis Working Group are archived at
-      <eref target="http://lists.w3.org/Archives/Public/ietf-http-wg/"/>.
-    </t>
-    <t>
-      XML versions and latest edits for this document
-      are available from <eref target="http://greenbytes.de/tech/webdav/#draft-reschke-http-jfv"/>.
-    </t>
-    <t>
-      The changes in this draft are summarized in <xref target="changes.since.14"/>.
+      This document is <em>not</em> an IETF specification, but it
+      indeed started as one. See <eref target="https://datatracker.ietf.org/doc/draft-ietf-httpbis-jfv/"/>
+      for details.
     </t>
   </note>
 
@@ -149,18 +133,6 @@
 </section>
 </section>
 
-<!--<section title="Notational Conventions" anchor="notational.conventions">
-<t>
-   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-   document are to be interpreted as described in <xref target="RFC2119"/>.
-</t>
-<t>
-   This document reuses terminology used in the base HTTP specifications,
-   namely <xref target="HTTP" x:fmt="of" x:rel="#fields"/>.
-</t>
-</section>-->
-
 <section title="Data Model and Format" anchor="data-model-and-format">
 <t>
   In HTTP, field lines with the same field name can occur multiple times
@@ -187,7 +159,7 @@
   The ABNF character names and classes below are used (copied
   from <xref target="RFC5234" x:fmt="," x:sec="B.1"/>):
 </t>
-<sourcecode type="abnf2616">
+<sourcecode type="abnf9110">
   CR               = %x0D    ; carriage return
   HTAB             = %x09    ; horizontal tab
   LF               = %x0A    ; line feed
@@ -209,7 +181,7 @@
   Formally, using the HTTP specification's ABNF extensions defined in
   <xref target="HTTP" x:fmt="of" x:rel="#abnf.extension"/>:
 </t>
-<sourcecode type="abnf2616">
+<sourcecode type="abnf9110">
   json-field-value = #json-field-item
   json-field-item  = JSON-Text
                    ; see <xref target="RFC8259" x:fmt="," x:rel="#grammar"/>,
@@ -331,11 +303,6 @@ Example: [17,42]
   will allow protocols to evolve without versioning or even using entire new
   field names.
 </t>
-
-<!--<t>
-  <cref>Explain what a definition of a new header field needs to do precisely
-  to use this format, mention must-ignore extensibility</cref>
-</t>-->
 </section>
 
 
@@ -483,7 +450,7 @@ Example: [17,42]
       <author fullname="Paul E. Hoffman" initials="P. E." surname="Hoffman"/>
       <date day="3" month="March" year="2025"/>
     </front>
-    <seriesInfo name="Internet-Draft" value="draft-bray-unichars-07"/>
+    <seriesInfo name="Internet-Draft" value="draft-bray-unichars-11"/>
   </reference>
 
   <reference anchor="UTF-8">
@@ -594,186 +561,10 @@ Example: [17,42]
 </section>
 </section>
 
-<section title="Implementations" anchor="implementations" removeInRFC="true">
+<section title="Implementations" anchor="implementations">
 <t>
   See <eref target="https://github.com/reschke/json-fields"/> for a proof-of-concept (in development).
 </t>
-</section>
-
-<section title="Change Log" anchor="change.log" removeInRFC="true">
-
-<section title="Since draft-reschke-http-jfv-00" anchor="changes.since.00">
-<t>
-  Editorial fixes + working on the TODOs.
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-01" anchor="changes.since.01">
-<t>
-  Mention slightly increased risk of smuggling information in header field values.
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-02" anchor="changes.since.02">
-<t>
-  Mention Kazuho Oku's proposal for abbreviated forms.
-</t>
-<t>
-  Added a bit of text about the motivation for a concrete JSON subset (ack Cory Benfield).
-</t>
-<t>
-  Expand I18N section.
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-03" anchor="changes.since.03">
-<t>
-  Mention relation to KEY header field.
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-04" anchor="changes.since.04">
-<t>
-  Between June and December 2016, this was a work item of the HTTP
-  working group (see <eref target="https://datatracker.ietf.org/doc/draft-ietf-httpbis-jfv/"/>).
-  Work (if any) continues now on <eref target="https://datatracker.ietf.org/doc/draft-reschke-http-jfv/"/>.
-</t>
-<t>
-  Changes made while this was a work item of the HTTP Working Group:
-</t>
-</section>
-<section title="Since draft-ietf-httpbis-jfv-00" anchor="changes.since.wg.00">
-<t>
-  Added example for "Accept-Encoding" (inspired by Kazuho's feedback),
-  showing a potential way to optimize the format when default values apply.
-</t>
-</section>
-<section title="Since draft-ietf-httpbis-jfv-01" anchor="changes.since.wg.01">
-<t>
-  Add interop discussion, building on I-JSON and ECMA-262 (see
-  <eref target="https://github.com/httpwg/http-extensions/issues/225"/>).
-</t>
-</section>
-<section title="Since draft-ietf-httpbis-jfv-02" anchor="changes.since.wg.02">
-<t>
-  Move non-essential parts into appendix.
-</t>
-<t>
-  Updated XHR reference.
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-05" anchor="changes.since.05">
-<t>
-  Add meat to "Using this Format in Header Field Definitions".
-</t>
-<t>
-  Add a few lines on the relation to "Key".
-</t>
-<t>
-  Summarize current use of the format.
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-06" anchor="changes.since.06">
-<t>
-  RFC 5987 is obsoleted by RFC 8187.
-</t>
-<t>
-  Update CLEARSITE comment.
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-07" anchor="changes.since.07">
-<t>
-  Update JSON and HSTRUCT references.
-</t>
-<t>
-  FEATUREPOL doesn't use JSON syntax anymore.
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-08" anchor="changes.since.08">
-<t>
-  Update HSTRUCT reference.
-</t>
-<t>
-  Update notes about CLEARSITE and FEATUREPOL.
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-09" anchor="changes.since.09">
-<t>
-  Update HSTRUCT and FEATUREPOL references.
-</t>
-<t>
-  Update note about REPORTING.
-</t>
-<t>
-  Changed category to "informational".
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-10" anchor="changes.since.10">
-<t>
-  Update HSTRUCT reference.
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-11" anchor="changes.since.11">
-<t>
-  Update HSTRUCT reference.
-</t>
-<t>
-  Update note about FEATUREPOL (now using Structured Fields).
-</t>
-<t>
-  Reference <xref target="HTTP"/> instead if RFC723* and adjust (header)
-  field terminology accordingly.
-</t>
-<t>
-  Remove discussion about the relation to KEY (as that spec is dormant:
-  <eref target="https://datatracker.ietf.org/doc/draft-ietf-httpbis-key/"/>).
-</t>
-<t>
-  Remove appendices "Examples" and "Discussion".
-</t>
-<t>
-  Mark "Use of JSON Field Value Encoding in the Wild" for removal in RFC.
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-12" anchor="changes.since.12">
-<t>
-  Update HTTP reference and update terminology some more.
-</t>
-<t>
-  Update HSTRUCT reference (now RFC 8941).
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-13" anchor="changes.since.13">
-<t>
-  Update HTTP reference.
-</t>
-<t>
-  Mention test implementation.
-</t>
-<t>
-  Clarify that Unicode unpaired surrogates or Noncharacters must not be sent.
-</t>
-<t>
-  Rewrite text about <xref target="STRUCTURED-FIELDS"/>, add appendix comparing both formats.
-</t>
-<t>
-  And send/receive examples.
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-14" anchor="changes.since.14">
-<t>
-  Update HTTP reference.
-</t>
-<t>
-  Mention <xref target="STRUCTURED-FIELDS"/>.
-</t>
-</section>
-<section title="Since draft-reschke-http-jfv-15" anchor="changes.since.15">
-<t>
-  Cite <xref target="STRUCTURED-FIELDS"/> instead RFC 8941. Cite <xref target="UTF-8"/>
-  and <xref target="UNICHARS"/>, and rework comparison chart for strings.
-</t>
-<t>
-  Removed appendix about use of this format in W3C specifications; they all have moved over
-  to Structured Fields.
-</t>
-</section>
 </section>
 
 <section title="Acknowledgements" anchor="acks" numbered="false">
