@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <title>A JSON Encoding for HTTP Field Values</title><script>
+function anchorRewrite() {
+  map = { };
+  if (window.location.hash.length >= 1) {
+    var fragid = window.location.hash.substr(1);
+    if (fragid) {
+      if (! document.getElementById(fragid)) {
+        var prefix = "rfc.";
+        var mapped = map[fragid];
+        if (mapped) {
+          window.location.hash = mapped;
+        } else if (fragid.indexOf("section-") == 0) {
+          window.location.hash = prefix + "section." + fragid.substring(8).replace("-",".p.");
+        } else if (fragid.indexOf("appendix-") == 0) {
+          window.location.hash = prefix + "section." + fragid.substring(9).replace("-",".p.");
+        } else if (fragid.indexOf("s-") == 0) {
+          var postfix = fragid.substring(2);
+          if (postfix.startsWith("abstract")) {
+            window.location.hash = prefix + postfix;
+          } else if (postfix.startsWith("note-")) {
+            window.location.hash = prefix + "note." + postfix.substring(5).replace("-",".p.");
+          } else {
+            window.location.hash = prefix + "section." + postfix.replace("-",".p.");
+          }
+        } else if (fragid.indexOf("p-") == 0) {
+          var r = fragid.substring(2);
+          var p = r.indexOf("-");
+          if (p >= 0) {
+            window.location.hash = prefix + "section." + r.substring(0, p) + ".p." + r.substring(p + 1);
+          }
+        }
+      }
+    }  
+  }
+}
+window.addEventListener('hashchange', anchorRewrite);
+window.addEventListener('DOMContentLoaded', anchorRewrite);
+</script><script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script><script>try {
+PR['registerLangHandler'](
+    PR['createSimpleLexer'](
+        [
+         // comment
+         [PR['PR_COMMENT'], /^;[^\x00-\x1f]*/, null, ";"],
+        ],
+        [
+         // string literals
+         [PR['PR_STRING'], /^(\%s|\%i)?"[^"\x00-\x1f]*"/, null],
+         // binary literals
+         [PR['PR_LITERAL'], /^\%b[01]+((-[01]+)|(\.[01]+)*)/, null],
+         // decimal literals
+         [PR['PR_LITERAL'], /^\%d[0-9]+((-[0-9]+)|(\.[0-9]+)*)/, null],
+         // hex literals
+         [PR['PR_LITERAL'], /^(\%x[A-Za-z0-9]+((-[A-Za-z0-9]+)|(\.[A-Za-z0-9]+)*))/, null],
+         // prose rule
+         [PR['PR_NOCODE'], /^<[^>\x00-\x1f]*>/, null],
+         // rule name
+         [PR['PR_TYPE'], /^([A-Za-z][A-Za-z0-9-]*)/, null],
+         [PR['PR_PUNCTUATION'], /^[=\(\)\*\/\[\]#]/, null],
+        ]),
+    ['ietf_abnf']);
+} catch(e){}
+</script><style title="rfc2629.xslt">
+:root {
+  --col-bg: white;
+  --col-bg-error: red;
+  --col-bg-highlight: yellow;
+  --col-bg-highlight2: lime;
+  --col-bg-light: gray;
+  --col-bg-pre: lightyellow;
+  --col-bg-pre1: #f8f8f8;
+  --col-bg-pre2: #f0f0f0;
+  --col-bg-th: #e9e9e9;
+  --col-bg-tr: #f5f5f5;
+  --col-fg: black;
+  --col-fg-del: red;
+  --col-fg-error: red;
+  --col-fg-ins: green;
+  --col-fg-light: gray;
+  --col-fg-link: blue;
+  --col-fg-title: green;
+}
+a {
+  color: var(--col-fg-link);
+  text-decoration: none;
+}
+a.smpl {
+  color: var(--col-fg);
+}
+a:hover {
+  text-decoration: underline;
+}
+a:active {
+  text-decoration: underline;
+}
+address {
+  margin-top: 1em;
+  margin-left: 2em;
+  font-style: normal;
+}
+body {
+  background-color: var(--col-bg);
+  color: var(--col-fg);
+  font-family: segoe, optima, arial, sans-serif, serif;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 10px 0px 10px 10px;
+}
+@media screen and (min-width: 1040px) {
+  body {
+    margin: 10px auto;
+    max-width: 1000px;
+  }
+}
+samp, span.tt, code, pre {
+  font-family: monospace;
+}
+cite {
+  font-style: normal;
+}
+dl {
+  margin-left: 2em;
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.nohang > dt {
+  float: none;
+}
+dl > dd {
+  margin-bottom: .5em;
+}
+dl.compact > dd {
+  margin-bottom: .0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+}
+dt > span {
+  line-height: 0;
+}
+dd > span {
+  line-height: 0;
+}
+ul.empty {
+  list-style-type: none;
+}
+ul.empty li {
+  margin-top: .5em;
+}
+dl p {
+  margin-left: 0em;
+}
+dl.reference > dt {
+  font-weight: bold;
+}
+dl.reference > dd {
+  margin-left: 6em;
+}
+h1 {
+  color: var(--col-fg-title);
+  font-size: 150%;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 36pt;
+  margin-bottom: 0pt;
+}
+h2 {
+  font-size: 130%;
+  page-break-after: avoid;
+}
+h2.np {
+  page-break-before: always;
+}
+h3 {
+  font-size: 120%;
+  page-break-after: avoid;
+}
+h4 {
+  font-size: 110%;
+  page-break-after: avoid;
+}
+h5, h6 {
+  font-size: 100%;
+  page-break-after: avoid;
+}
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+  color: var(--col-fg);
+}
+img {
+  margin-left: 3em;
+}
+ol {
+  margin-left: 2em;
+}
+li ol {
+  margin-left: 0em;
+}
+ol p {
+  margin-left: 0em;
+}
+p {
+  margin-left: 2em;
+}
+pre {
+  font-size: 90%;
+  margin-left: 3em;
+  background-color: var(--col-bg-pre);
+  padding: .25em;
+  page-break-inside: avoid;
+}
+pre.text2 {
+  border-style: dotted;
+  border-width: 1px;
+  background-color: var(--col-bg-pre2);
+}
+pre.inline {
+  background-color: var(--col-bg);
+  padding: 0em;
+  page-break-inside: auto;
+  border: none !important;
+}
+pre.text {
+  border-style: dotted;
+  border-width: 1px;
+  background-color: var(--col-bg-pre1);
+}
+pre.drawing {
+  border-style: solid;
+  border-width: 1px;
+  background-color: var(--col-bg-pre1);
+  padding: 2em;
+}
+table {
+  margin-left: 2em;
+}
+div.tt {
+  margin-left: 2em;
+} 
+table.tt {
+  border-collapse: collapse;
+  border-color: var(--col-fg-light);
+  border-spacing: 0; 
+  vertical-align: top;
+ }
+table.tt th {
+  border-color: var(--col-fg-light);
+  padding: 3px;
+}
+table.tt td {
+  border-color: var(--col-fg-light);
+  padding: 3px;
+}
+table.all {
+  border-style: solid;
+  border-width: 2px;
+}
+table.full {
+  border-style: solid;
+  border-width: 2px;
+}
+table.tt td {
+  vertical-align: top;
+}
+table.all td {
+  border-style: solid;
+  border-width: 1px;
+}
+table.full td {
+  border-style: none solid;
+  border-width: 1px;
+}
+table.tt th {
+  vertical-align: top;
+}
+table.all th {
+  border-style: solid;
+  border-width: 1px;
+}
+table.full th {
+  border-style: solid;
+  border-width: 1px 1px 2px 1px;
+}
+table.tleft {
+  margin-right: auto;
+}
+table.tright {
+  margin-left: auto;
+}
+table.tcenter {
+  margin-left: auto;
+  margin-right: auto;
+}
+caption {
+  caption-side: bottom;
+  font-weight: bold;
+  font-size: 80%;
+  margin-top: .5em;
+}
+
+table.v3 tr {
+    vertical-align: top;
+}
+table.v3 th {
+  background-color: var(--col-bg-th);
+  vertical-align: top;
+  padding: 0.25em 0.5em;
+}
+table.v3 td {
+  padding: 0.25em 0.5em;
+}
+table.v3 tr:nth-child(2n) > td {
+  background-color: var(--col-bg-tr);
+  vertical-align: top;
+}
+tr p {
+  margin-left: 0em;
+}
+tr pre {
+  margin-left: 1em;
+}
+tr ol {
+  margin-left: 1em;
+}
+tr ul {
+  margin-left: 1em;
+}
+tr dl {
+  margin-left: 1em;
+}
+
+table.header {
+  border-spacing: 1px;
+  width: 95%;
+  font-size: 90%;
+  color: var(--col-bg);
+}
+td.top {
+  vertical-align: top;
+}
+td.topnowrap {
+  vertical-align: top;
+  white-space: nowrap;
+}
+table.header td {
+  vertical-align: top;
+  background-color: var(--col-bg-light);
+  width: 50%;
+}
+table.header a {
+  color: var(--col-bg);
+}
+ul.toc, ul.toc ul {
+  list-style: none;
+  margin-left: 1.5em;
+  padding-left: 0em;
+}
+ul.toc li {
+  line-height: 150%;
+  font-weight: bold;
+  margin-left: 0em;
+}
+ul.toc li li {
+  line-height: normal;
+  font-weight: normal;
+  font-size: 90%;
+  margin-left: 0em;
+}
+li.excluded {
+  font-size: 0%;
+}
+ul {
+  margin-left: 2em;
+}
+li ul {
+  margin-left: 0em;
+}
+ul p {
+  margin-left: 0em;
+}
+.filename, h1, h2, h3, h4 {
+  font-family: segoe, optima, arial, sans-serif;
+}
+.nobr {
+  white-space: nowrap;
+}
+
+.avoidbreakinside {
+  page-break-inside: avoid;
+}
+.avoidbreakafter {
+  page-break-after: avoid;
+}
+
+.comment {
+  background-color: var(--col-bg-highlight);
+}
+.center {
+  text-align: center;
+}
+.error {
+  color: var(--col-fg-error);
+  font-style: italic;
+  font-weight: bold;
+}
+.figure {
+  font-weight: bold;
+  text-align: center;
+  font-size: 80%;
+}
+.filename {
+  font-size: 112%;
+  font-weight: bold;
+  line-height: 21pt;
+  text-align: center;
+  margin-top: 0pt;
+}
+.fn {
+  font-weight: bold;
+}
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+}
+.warning {
+  font-size: 130%;
+  background-color: var(--col-bg-highlight);
+}
+.self {
+    color: var(--col-fg-light);
+    margin-left: .3em;
+    text-decoration: none;
+    visibility: hidden;
+    user-select: none;
+}
+.self:hover {
+    text-decoration: none;
+}
+h1:hover > a.self, h2:hover > a.self, h3:hover > a.self, li:hover > a.self, p:hover > a.self {
+    visibility: visible;
+}
+  pre.prettyprint .pln { color: #000; }
+  pre.prettyprint .str, pre.prettyprint .atv { color: #080; }
+  pre.prettyprint .kwd, pre.prettyprint .tag { color: #008; }
+  pre.prettyprint .com { color: #800; }
+  pre.prettyprint .typ, pre.prettyprint .atn, pre.prettyprint .dec, pre.prettyprint .var { color: #606; }
+  pre.prettyprint .lit { color: #066; }
+  pre.prettyprint .pun, pre.prettyprint .opn, pre.prettyprint .clo { color: #660; }
+
+
+@media screen {
+  pre.text, pre.text2, pre.drawing {
+    width: 69ch;
+  }
+}
+
+@media print {
+  .noprint {
+    display: none;
+  }
+
+  a {
+    color: black;
+    text-decoration: none;
+  }
+
+  table.header {
+    width: 90%;
+  }
+
+  td.header {
+    width: 50%;
+    color: black;
+    background-color: white;
+    vertical-align: top;
+    font-size: 110%;
+  }
+
+  ul.toc a:last-child::after {
+    content: leader('.') target-counter(attr(href), page);
+  }
+
+  ul.ind li li a {
+    content: target-counter(attr(href), page);
+  }
+
+  .print2col {
+    column-count: 2;
+  }
+}
+@page {
+  font-family: segoe, optima, arial, sans-serif, serif;
+  @top-left {
+       content: "";
+  }
+  @top-right {
+       content: "April 2025";
+  }
+  @top-center {
+       content: "A JSON Encoding for HTTP Field Values";
+  }
+  @bottom-left {
+       content: "Reschke";
+  }
+  @bottom-center {
+       content: "";
+  }
+  @bottom-right {
+       content: "[Page " counter(page) "]";
+  }
+}
+@page:first {
+    @top-left {
+      content: normal;
+    }
+    @top-right {
+      content: normal;
+    }
+    @top-center {
+      content: normal;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --col-bg: black;
+    --col-bg-error: red;
+    --col-bg-highlight: brown;
+    --col-bg-highlight2: lime;
+    --col-bg-light: gray;
+    --col-bg-pre: #202000;
+    --col-bg-pre1: #080808;
+    --col-bg-pre2: #101010;
+    --col-bg-th: #303030;
+    --col-bg-tr: #202020;
+    --col-fg: white;
+    --col-fg-del: red;
+    --col-fg-error: red;
+    --col-fg-ins: green;
+    --col-fg-light: gray;
+    --col-fg-link: lightblue;
+    --col-fg-title: green;
+  }
+  
+  pre.prettyprint .pln { color: #fff; }
+  pre.prettyprint .str, pre.prettyprint .atv { color: #8f8; }
+  pre.prettyprint .kwd, pre.prettyprint .tag { color: #88f; }
+  pre.prettyprint .com { color: #f88; }
+  pre.prettyprint .typ, pre.prettyprint .atn, pre.prettyprint .dec, pre.prettyprint .var { color: #f8f; }
+  pre.prettyprint .lit { color: #8ff; }
+  pre.prettyprint .pun, pre.prettyprint .opn, pre.prettyprint .clo { color: #ff8; }
+}
+</style><link rel="Contents" href="#rfc.toc"><link rel="Author" href="#rfc.authors"><link rel="Chapter" title="1 Introduction" href="#rfc.section.1"><link rel="Chapter" title="2 Data Model and Format" href="#rfc.section.2"><link rel="Chapter" title="3 Sender Requirements" href="#rfc.section.3"><link rel="Chapter" title="4 Recipient Requirements" href="#rfc.section.4"><link rel="Chapter" title="5 Using this Format in Field Definitions" href="#rfc.section.5"><link rel="Chapter" title="6 Deployment Considerations" href="#rfc.section.6"><link rel="Chapter" title="7 Interoperability Considerations" href="#rfc.section.7"><link rel="Chapter" title="8 Internationalization Considerations" href="#rfc.section.8"><link rel="Chapter" title="9 Security Considerations" href="#rfc.section.9"><link rel="Chapter" title="10 References" href="#rfc.section.10"><link rel="Appendix" title="A Comparison with Structured Fields" href="#rfc.section.A"><link rel="Appendix" title="B Implementations" href="#rfc.section.B"><link rel="Appendix" title="Acknowledgements" href="#rfc.section.unnumbered-1"><meta name="viewport" content="initial-scale=1"><meta name="generator" content="http://greenbytes.de/tech/webdav/rfcxml.xslt, Revision 1.1480, 2025/04/19 07:32:25, XSLT vendor: SAXON 6.5.5 from Michael Kay http://saxon.sf.net/"><meta name="keywords" content="HTTP, JSON, Field Value"><link rel="schema.dcterms" href="http://purl.org/dc/terms/"><meta name="dcterms.creator" content="Reschke, J. F."><meta name="dcterms.abstract" content="This document establishes a convention for use of JSON-encoded field values in new HTTP fields."><meta name="description" content="This document establishes a convention for use of JSON-encoded field values in new HTTP fields."></head><body><header><table class="header" id="rfc.headerblock"><tbody><tr><td class="left">A JSON Encoding for HTTP Field Values</td><td class="right">J. Reschke</td></tr><tr><td class="left"></td><td class="right">greenbytes</td></tr><tr><td class="left"></td><td class="right">April 2025</td></tr></tbody></table><div id="rfc.title"><h1>A JSON Encoding for HTTP Field Values</h1></div></header><section><h2 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h2><div id="rfc.abstract.p.1"><p>This document establishes a convention for use of JSON-encoded field values in new HTTP fields.<a class="self" href="#rfc.abstract.p.1">&para;</a></p></div></section><section class="note"><h2 id="rfc.note.1"><a href="#rfc.note.1">Editorial Note</a></h2><div id="rfc.note.1.p.1"><p>This document is <em>not</em> an IETF specification, but it indeed started as one. See <a href="https://datatracker.ietf.org/doc/draft-ietf-httpbis-jfv/">https://datatracker.ietf.org/doc/draft-ietf-httpbis-jfv/</a> for details.<a class="self" href="#rfc.note.1.p.1">&para;</a></p></div></section><hr class="noprint"><nav id="rfc.toc"><h2 class="np"><a href="#rfc.toc">Table of Contents</a></h2><ul class="toc"><li><a href="#rfc.section.1">1.</a>&nbsp;&nbsp;&nbsp;<a href="#introduction">Introduction</a><ul><li><a href="#rfc.section.1.1">1.1.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.section.1.1">Relation to "Structured Field Values for HTTP" (<cite title="Structured Field Values for HTTP">[STRUCTURED-FIELDS]</cite>)</a></li></ul></li><li><a href="#rfc.section.2">2.</a>&nbsp;&nbsp;&nbsp;<a href="#data-model-and-format">Data Model and Format</a></li><li><a href="#rfc.section.3">3.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.section.3">Sender Requirements</a><ul><li><a href="#rfc.section.3.1">3.1.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.section.3.1">Example</a></li></ul></li><li><a href="#rfc.section.4">4.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.section.4">Recipient Requirements</a><ul><li><a href="#rfc.section.4.1">4.1.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.section.4.1">Example</a></li></ul></li><li><a href="#rfc.section.5">5.</a>&nbsp;&nbsp;&nbsp;<a href="#using-this-format-in-header-field-definitions">Using this Format in Field Definitions</a></li><li><a href="#rfc.section.6">6.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.section.6">Deployment Considerations</a></li><li><a href="#rfc.section.7">7.</a>&nbsp;&nbsp;&nbsp;<a href="#interop">Interoperability Considerations</a><ul><li><a href="#rfc.section.7.1">7.1.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.section.7.1">Encoding and Characters</a></li><li><a href="#rfc.section.7.2">7.2.</a>&nbsp;&nbsp;&nbsp;<a href="#interop.numbers">Numbers</a></li><li><a href="#rfc.section.7.3">7.3.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.section.7.3">Object Constraints</a></li></ul></li><li><a href="#rfc.section.8">8.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.section.8">Internationalization Considerations</a></li><li><a href="#rfc.section.9">9.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.section.9">Security Considerations</a></li><li><a href="#rfc.section.10">10.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.references">References</a><ul><li><a href="#rfc.section.10.1">10.1.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.references.1">Normative References</a></li><li><a href="#rfc.section.10.2">10.2.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.references.2">Informative References</a></li></ul></li><li><a href="#rfc.section.A">Appendix A.</a>&nbsp;&nbsp;&nbsp;<a href="#comparison">Comparison with Structured Fields</a><ul><li><a href="#rfc.section.A.1">A.1.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.section.A.1">Base Types</a></li><li><a href="#rfc.section.A.2">A.2.</a>&nbsp;&nbsp;&nbsp;<a href="#rfc.section.A.2">Structures</a></li></ul></li><li><a href="#rfc.section.B">Appendix B.</a>&nbsp;&nbsp;&nbsp;<a href="#implementations">Implementations</a></li><li><a href="#acks">Acknowledgements</a></li><li><a href="#rfc.authors">Author's Address</a></li></ul></nav><section id="introduction"><h2 id="rfc.section.1" class="np"><a href="#rfc.section.1">1.</a>&nbsp;<a href="#introduction">Introduction</a></h2><div id="rfc.section.1.p.1" class="avoidbreakafter"><p>Defining syntax for new HTTP fields (<a href="#HTTP"><cite title="HTTP Semantics">[HTTP]</cite></a>, <a href="rfc9110.html#fields" title="Fields">Section 5</a>) is non-trivial. Among the commonly encountered problems are:<a class="self" href="#rfc.section.1.p.1">&para;</a></p></div><div id="rfc.section.1.p.2"><ul><li>There is no common syntax for complex field values. Several well-known fields do use a similarly looking syntax, but it is hard to write generic parsing code that will both correctly handle valid field values but also reject invalid ones.</li><li>The HTTP message format allows field lines to repeat, so field syntax needs to be designed in a way that these cases are either meaningful, or can be unambiguously detected and rejected.</li><li>HTTP does not define a character encoding scheme (<a href="#RFC6365"><cite title="Terminology Used in Internationalization in the IETF">[RFC6365]</cite></a>, <a href="https://www.rfc-editor.org/rfc/rfc6365.html#section-2">Section 2</a>), so fields are either stuck with US-ASCII (<a href="#RFC0020"><cite title="ASCII format for network interchange">[RFC0020]</cite></a>), or need out-of-band information to decide what encoding scheme is used. Furthermore, APIs usually assume a default encoding scheme in order to map from octet sequences to strings (for instance, <a href="#XMLHttpRequest"><cite title="XMLHttpRequest">[XMLHttpRequest]</cite></a> uses the IDL type "ByteString", effectively resulting in the ISO-8859-1 character encoding scheme <a href="#ISO-8859-1"><cite title="Information technology -- 8-bit single-byte coded graphic character sets -- Part 1: Latin alphabet No. 1">[ISO-8859-1]</cite></a> being used).</li></ul></div><div id="rfc.section.1.p.3"><p>(See <a href="rfc9110.html#fields.extensibility" title="Field Extensibility">Section 16.3</a> of <a href="#HTTP"><cite title="HTTP Semantics">[HTTP]</cite></a> for a summary of considerations for new fields.)<a class="self" href="#rfc.section.1.p.3">&para;</a></p></div><div id="rfc.section.1.p.4" class="avoidbreakafter"><p>This specification addresses the issues listed above by defining both a generic JSON-based (<a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>) data model and a concrete wire format that can be used in definitions of new fields, where the goals were:<a class="self" href="#rfc.section.1.p.4">&para;</a></p></div><div id="rfc.section.1.p.5"><ul><li>to be compatible with field recombination when field lines occur multiple times in a single message (<a href="rfc9110.html#fields.order" title="Field Order">Section 5.3</a> of <a href="#HTTP"><cite title="HTTP Semantics">[HTTP]</cite></a>), and</li><li>not to use any problematic characters in the field value (non-ASCII characters and certain whitespace characters).</li></ul></div><section id="n-relation-to-_structured-field-values-for-http_---"><h3 id="rfc.section.1.1"><a href="#rfc.section.1.1">1.1.</a>&nbsp;<a href="#n-relation-to-_structured-field-values-for-http_---">Relation to "Structured Field Values for HTTP" (<cite title="Structured Field Values for HTTP">[STRUCTURED-FIELDS]</cite>)</a></h3><div id="rfc.section.1.1.p.1"><p>"Structured Field Values for HTTP", an IETF RFC on the Standards Track, is a different approach to this set of problems. It uses a more compact notation, similar to what is used in existing header fields, and avoids several potential interoperability problems inherent to the use of JSON.<a class="self" href="#rfc.section.1.1.p.1">&para;</a></p></div><div id="rfc.section.1.1.p.2"><p>In general, that format is preferred for newly defined fields. The JSON-based format defined by this document might however be useful in case the data that needs to be transferred is already in JSON format, or features not covered by "Structured Field Values" are needed.<a class="self" href="#rfc.section.1.1.p.2">&para;</a></p></div><div id="rfc.section.1.1.p.3"><p>See <a href="#comparison" title="Comparison with Structured Fields">Appendix A</a> for more details.<a class="self" href="#rfc.section.1.1.p.3">&para;</a></p></div></section></section><section id="data-model-and-format"><h2 id="rfc.section.2"><a href="#rfc.section.2">2.</a>&nbsp;<a href="#data-model-and-format">Data Model and Format</a></h2><div id="rfc.section.2.p.1"><p>In HTTP, field lines with the same field name can occur multiple times within a single message (<a href="rfc9110.html#fields.order" title="Field Order">Section 5.3</a> of <a href="#HTTP"><cite title="HTTP Semantics">[HTTP]</cite></a>). When this happens, recipients are allowed to combine the field line values using commas as delimiter, forming a combined "field value". This rule matches nicely JSON's array format (<a href="rfc8259.html#arrays" title="Arrays">Section 5</a> of <a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>). Thus, the basic data model used here is the JSON array.<a class="self" href="#rfc.section.2.p.1">&para;</a></p></div><div id="rfc.section.2.p.2"><p>Field definitions that need only a single value can restrict themselves to arrays of length 1, and are encouraged to define error handling in case more values are received (such as "first wins", "last wins", or "abort with fatal error message").<a class="self" href="#rfc.section.2.p.2">&para;</a></p></div><div id="rfc.section.2.p.3"><p>JSON arrays are mapped to field values by creating a sequence of serialized member elements, separated by commas and optionally whitespace. This is equivalent to using the full JSON array format, while leaving out the "begin-array" ('[') and "end-array" (']') delimiters.<a class="self" href="#rfc.section.2.p.3">&para;</a></p></div><div id="rfc.section.2.p.4" class="avoidbreakafter"><p>The ABNF character names and classes below are used (copied from <a href="#RFC5234"><cite title="Augmented BNF for Syntax Specifications: ABNF">[RFC5234]</cite></a>, <a href="https://www.rfc-editor.org/rfc/rfc5234.html#appendix-B.1">Appendix B.1</a>):<a class="self" href="#rfc.section.2.p.4">&para;</a></p></div><div id="rfc.section.2.p.5"><pre class="inline prettyprint lang-ietf_abnf">  CR               = %x0D    ; carriage return
+  HTAB             = %x09    ; horizontal tab
+  LF               = %x0A    ; line feed
+  SP               = %x20    ; space
+  VCHAR            = %x21-7E ; visible (printing) characters
+</pre></div><div id="rfc.section.2.p.6"><p>Characters in JSON strings that are not allowed or discouraged in HTTP field values &#8212; that is, not in the "VCHAR" definition &#8212; need to be represented using JSON's "backslash" escaping mechanism (<a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>, <a href="rfc8259.html#strings" title="Strings">Section 7</a>).<a class="self" href="#rfc.section.2.p.6">&para;</a></p></div><div id="rfc.section.2.p.7"><p>The control characters CR, LF, and HTAB do not appear inside JSON strings, but can be used outside (line breaks, indentation etc.). These characters need to be either stripped or replaced by space characters (ABNF "SP").<a class="self" href="#rfc.section.2.p.7">&para;</a></p></div><div id="rfc.section.2.p.8" class="avoidbreakafter"><p>Formally, using the HTTP specification's ABNF extensions defined in <a href="rfc9110.html#abnf.extension" title="Lists (#rule ABNF Extension)">Section 5.6.1</a> of <a href="#HTTP"><cite title="HTTP Semantics">[HTTP]</cite></a>:<a class="self" href="#rfc.section.2.p.8">&para;</a></p></div><div id="rfc.section.2.p.9"><pre class="inline prettyprint lang-ietf_abnf">  json-field-value = #json-field-item
+  json-field-item  = JSON-Text
+                   ; see <a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>, <a href="rfc8259.html#grammar" title="JSON Grammar">Section 2</a>,
+                   ; post-processed so that only VCHAR characters
+                   ; are used
+</pre></div></section><section id="n-sender-requirements"><h2 id="rfc.section.3"><a href="#rfc.section.3">3.</a>&nbsp;<a href="#n-sender-requirements">Sender Requirements</a></h2><div id="rfc.section.3.p.1" class="avoidbreakafter"><p>To map a JSON array to an HTTP field value, process each array element separately by:<a class="self" href="#rfc.section.3.p.1">&para;</a></p></div><div id="rfc.section.3.p.2"><ol><li>generating the JSON representation,</li><li>stripping all JSON control characters (CR, HTAB, LF), or replacing them by space ("SP") characters,</li><li>replacing all remaining non-VSPACE characters by the equivalent backslash-escape sequence (<a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>, <a href="rfc8259.html#strings" title="Strings">Section 7</a>).</li></ol></div><div id="rfc.section.3.p.3"><p>The resulting list of strings is transformed into an HTTP field value by combining them using comma (%x2C) plus optional SP as delimiter, and encoding the resulting string into an octet sequence using the US-ASCII character encoding scheme (<a href="#RFC0020"><cite title="ASCII format for network interchange">[RFC0020]</cite></a>).<a class="self" href="#rfc.section.3.p.3">&para;</a></p></div><section id="n-example_1"><h3 id="rfc.section.3.1"><a href="#rfc.section.3.1">3.1.</a>&nbsp;<a href="#n-example_1">Example</a></h3><div id="rfc.section.3.1.p.1" class="avoidbreakafter"><p>With the JSON data below, containing the non-ASCII characters "&uuml;" (LATIN SMALL LETTER U WITH DIAERESIS, U+00FC) and "&#8364;" (EURO SIGN, U+20AC):<a class="self" href="#rfc.section.3.1.p.1">&para;</a></p></div><div id="rfc.section.3.1.p.2"><pre class="text prettyprint lang-json">[
+  {
+    "destination": "M&uuml;nster",
+    "price": 123,
+    "currency": "&#8364;"
+  }
+]
+</pre></div><div id="rfc.section.3.1.p.3" class="avoidbreakafter"><p>The generated field value would be:<a class="self" href="#rfc.section.3.1.p.3">&para;</a></p></div><div id="rfc.section.3.1.p.4"><pre class="text prettyprint lang-json">{ "destination": "M\u00FCnster", "price": 123, "currency": "\u20AC" }
+</pre></div></section></section><section id="n-recipient-requirements"><h2 id="rfc.section.4"><a href="#rfc.section.4">4.</a>&nbsp;<a href="#n-recipient-requirements">Recipient Requirements</a></h2><div id="rfc.section.4.p.1" class="avoidbreakafter"><p>To map a set of HTTP field line values to a JSON array:<a class="self" href="#rfc.section.4.p.1">&para;</a></p></div><div id="rfc.section.4.p.2"><ol><li>combine all field line values into a single field value as per <a href="rfc9110.html#fields.order" title="Field Order">Section 5.3</a> of <a href="#HTTP"><cite title="HTTP Semantics">[HTTP]</cite></a>,</li><li>add a leading begin-array ("[") octet and a trailing end-array ("]") octet, then</li><li>run the resulting octet sequence through a JSON parser.</li></ol></div><div id="rfc.section.4.p.3"><p>The result of the parsing operation is either an error (in which case the field values needs to be considered invalid), or a JSON array.<a class="self" href="#rfc.section.4.p.3">&para;</a></p></div><section id="n-example_2"><h3 id="rfc.section.4.1"><a href="#rfc.section.4.1">4.1.</a>&nbsp;<a href="#n-example_2">Example</a></h3><div id="rfc.section.4.1.p.1" class="avoidbreakafter"><p>An HTTP message containing the field lines:<a class="self" href="#rfc.section.4.1.p.1">&para;</a></p></div><div id="rfc.section.4.1.p.2"><pre class="text">Example: "\u221E"
+Example: {"date":"2012-08-25"}
+Example: [17,42]
+</pre></div><div id="rfc.section.4.1.p.3" class="avoidbreakafter"><p>would be parsed into the JSON array below:<a class="self" href="#rfc.section.4.1.p.3">&para;</a></p></div><div id="rfc.section.4.1.p.4"><pre class="text prettyprint lang-json">[
+  "&#8734;",
+  {
+    "date": "2012-08-25"
+  },
+  [
+    17,
+    42
+  ]
+]
+</pre></div></section></section><section id="using-this-format-in-header-field-definitions"><h2 id="rfc.section.5"><a href="#rfc.section.5">5.</a>&nbsp;<a href="#using-this-format-in-header-field-definitions">Using this Format in Field Definitions</a></h2><div id="rfc.section.5.p.1"><p>Specifications defining new HTTP fields need to take the considerations listed in <a href="rfc9110.html#fields.extensibility" title="Field Extensibility">Section 16.3</a> of <a href="#HTTP"><cite title="HTTP Semantics">[HTTP]</cite></a> into account. Many of these will already be accounted for by using the format defined in this specification.<a class="self" href="#rfc.section.5.p.1">&para;</a></p></div><div id="rfc.section.5.p.2"><p>Readers of HTTP-related specifications frequently expect an ABNF definition of the field value syntax. This is not really needed here, as the actual syntax is JSON text, as defined in <a href="rfc8259.html#grammar" title="JSON Grammar">Section 2</a> of <a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>.<a class="self" href="#rfc.section.5.p.2">&para;</a></p></div><div id="rfc.section.5.p.3"><p>A very simple way to use this JSON encoding thus is just to cite this specification &#8212; specifically the "json-field-value" ABNF production defined in <a href="#data-model-and-format" title="Data Model and Format">Section 2</a> &#8212; and otherwise not to talk about the details of the field syntax at all.<a class="self" href="#rfc.section.5.p.3">&para;</a></p></div><div id="rfc.section.5.p.4"><p>An alternative approach is just to repeat the ABNF-related parts from <a href="#data-model-and-format" title="Data Model and Format">Section 2</a>.<a class="self" href="#rfc.section.5.p.4">&para;</a></p></div><div id="rfc.section.5.p.5"><p>This frees the specification from defining the concrete on-the-wire syntax. What's left is defining the field value in terms of a JSON array. An important aspect is the question of extensibility, e.g. how recipients ought to treat unknown field names. In general, a "must ignore" approach will allow protocols to evolve without versioning or even using entire new field names.<a class="self" href="#rfc.section.5.p.5">&para;</a></p></div></section><section id="n-deployment-considerations"><h2 id="rfc.section.6"><a href="#rfc.section.6">6.</a>&nbsp;<a href="#n-deployment-considerations">Deployment Considerations</a></h2><div id="rfc.section.6.p.1"><p>This JSON-based syntax will only apply to newly introduced fields, thus backwards compatibility is not a problem. That being said, it is conceivable that there is existing code that might trip over double quotes not being used for HTTP's quoted-string syntax (<a href="rfc9110.html#quoted.strings" title="Quoted Strings">Section 5.6.4</a> of <a href="#HTTP"><cite title="HTTP Semantics">[HTTP]</cite></a>).<a class="self" href="#rfc.section.6.p.1">&para;</a></p></div></section><section id="interop"><h2 id="rfc.section.7"><a href="#rfc.section.7">7.</a>&nbsp;<a href="#interop">Interoperability Considerations</a></h2><div id="rfc.section.7.p.1" class="avoidbreakafter"><p>The "I-JSON Message Format" specification (<a href="#RFC7493"><cite title="The I-JSON Message Format">[RFC7493]</cite></a>) addresses known JSON interoperability pain points. This specification borrows from the requirements made over there:<a class="self" href="#rfc.section.7.p.1">&para;</a></p></div><section id="n-encoding-and-characters"><h3 id="rfc.section.7.1"><a href="#rfc.section.7.1">7.1.</a>&nbsp;<a href="#n-encoding-and-characters">Encoding and Characters</a></h3><div id="rfc.section.7.1.p.1"><p>This specification requires that field values use only US-ASCII characters, and thus by definition uses a subset of UTF-8 (<a href="https://www.rfc-editor.org/rfc/rfc7493.html#section-2.1">Section 2.1</a> of <a href="#RFC7493"><cite title="The I-JSON Message Format">[RFC7493]</cite></a>).<a class="self" href="#rfc.section.7.1.p.1">&para;</a></p></div><div id="rfc.section.7.1.p.2"><p>Furthermore, escape sequences in JSON strings (<a href="rfc8259.html#rfc.section.7">Section 7</a> of <a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>) &#8212; both in object member names and string values &#8212; are not allowed to represent non-Unicode code points such as unpaired surrogates or Noncharacters (see "General Structure" in <a href="#UNICODE"><cite title="The Unicode Standard">[UNICODE]</cite></a>).<a class="self" href="#rfc.section.7.1.p.2">&para;</a></p></div></section><section id="interop.numbers"><h3 id="rfc.section.7.2"><a href="#rfc.section.7.2">7.2.</a>&nbsp;<a href="#interop.numbers">Numbers</a></h3><div id="rfc.section.7.2.p.1"><p>Be aware of the issues around number precision, as discussed in <a href="https://www.rfc-editor.org/rfc/rfc7493.html#section-2.2">Section 2.2</a> of <a href="#RFC7493"><cite title="The I-JSON Message Format">[RFC7493]</cite></a>.<a class="self" href="#rfc.section.7.2.p.1">&para;</a></p></div></section><section id="n-object-constraints"><h3 id="rfc.section.7.3"><a href="#rfc.section.7.3">7.3.</a>&nbsp;<a href="#n-object-constraints">Object Constraints</a></h3><div id="rfc.section.7.3.p.1"><p>As described in <a href="rfc8259.html#rfc.section.4">Section 4</a> of <a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>, JSON parser implementations differ in the handling of duplicate object names. Therefore, senders are not allowed to use duplicate object names, and recipients are advised to either treat field values with duplicate names as invalid (consistent with <a href="#RFC7493"><cite title="The I-JSON Message Format">[RFC7493]</cite></a>, <a href="https://www.rfc-editor.org/rfc/rfc7493.html#section-2.3">Section 2.3</a>) or use the lexically last value (consistent with <a href="#ECMA-262"><cite title="ECMA-262 6th Edition, The ECMAScript 2015 Language Specification">[ECMA-262]</cite></a>, <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-internalizejsonproperty">Section 24.3.1.1</a>).<a class="self" href="#rfc.section.7.3.p.1">&para;</a></p></div><div id="rfc.section.7.3.p.2"><p>Furthermore, ordering of object members is not significant and can not be relied upon.<a class="self" href="#rfc.section.7.3.p.2">&para;</a></p></div></section></section><section id="n-internationalization-considerations"><h2 id="rfc.section.8"><a href="#rfc.section.8">8.</a>&nbsp;<a href="#n-internationalization-considerations">Internationalization Considerations</a></h2><div id="rfc.section.8.p.1"><p>In current versions of HTTP, field values are represented by octet sequences, usually used to transmit ASCII characters, with restrictions on the use of certain control characters, and no associated default character encoding, nor a way to describe it (<a href="#HTTP"><cite title="HTTP Semantics">[HTTP]</cite></a>, <a href="rfc9110.html#fields" title="Fields">Section 5</a>).<a class="self" href="#rfc.section.8.p.1">&para;</a></p></div><div id="rfc.section.8.p.2"><p>This specification maps all characters which can cause problems to JSON escape sequences, thereby solving the HTTP field internationalization problem.<a class="self" href="#rfc.section.8.p.2">&para;</a></p></div><div id="rfc.section.8.p.3"><p>Future specifications of HTTP might change to allow non-ASCII characters natively. In that case, fields using the syntax defined by this specification would have a simple migration path (by just stopping to require escaping of non-ASCII characters).<a class="self" href="#rfc.section.8.p.3">&para;</a></p></div></section><section id="n-security-considerations"><h2 id="rfc.section.9"><a href="#rfc.section.9">9.</a>&nbsp;<a href="#n-security-considerations">Security Considerations</a></h2><div id="rfc.section.9.p.1"><p>Using JSON-shaped field values is believed to not introduce any new threads beyond those described in <a href="rfc8259.html#rfc.section.12">Section 12</a> of <a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>, namely the risk of recipients using the wrong tools to parse them.<a class="self" href="#rfc.section.9.p.1">&para;</a></p></div><div id="rfc.section.9.p.2"><p>Other than that, any syntax that makes extensions easy can be used to smuggle information through field values; however, this concern is shared with other widely used formats, such as those using parameters in the form of name/value pairs.<a class="self" href="#rfc.section.9.p.2">&para;</a></p></div></section><section id="rfc.references"><h2 id="rfc.section.10"><a href="#rfc.section.10">10.</a> References</h2><section><div id="rfc.references.1"><h3 id="rfc.section.10.1"><a href="#rfc.section.10.1">10.1.</a> Normative References</h3><dl class="reference"><dt id="HTTP">[<a href="#HTTP" class="smpl">HTTP</a>]</dt><dd><a href="mailto:fielding@gbiv.com">Fielding, R., Ed.</a>, <a href="mailto:mnot@mnot.net">Nottingham, M., Ed.</a>, and <a href="mailto:julian.reschke@greenbytes.de">J. Reschke, Ed.</a>, &#8220;<a href="https://www.rfc-editor.org/rfc/rfc9110.html">HTTP Semantics</a>&#8221;, <a href="https://www.rfc-editor.org/info/std97">STD 97</a>, RFC 9110, <a href="https://dx.doi.org/10.17487/RFC9110">DOI 10.17487/RFC9110</a>, June 2022.</dd><dt id="RFC0020">[<a href="#RFC0020" class="smpl">RFC0020</a>]</dt><dd>Cerf, V., &#8220;<a href="https://www.rfc-editor.org/rfc/rfc20.html">ASCII format for network interchange</a>&#8221;, <a href="https://www.rfc-editor.org/info/std80">STD 80</a>, RFC 20, <a href="https://dx.doi.org/10.17487/RFC0020">DOI 10.17487/RFC0020</a>, October 1969, &lt;<a href="https://www.rfc-editor.org/info/rfc20">https://www.rfc-editor.org/info/rfc20</a>&gt;.</dd><dt id="RFC5234">[<a href="#RFC5234" class="smpl">RFC5234</a>]</dt><dd>Crocker, D., Ed. and P. Overell, &#8220;<a href="https://www.rfc-editor.org/rfc/rfc5234.html">Augmented BNF for Syntax Specifications: ABNF</a>&#8221;, <a href="https://www.rfc-editor.org/info/std68">STD 68</a>, RFC 5234, <a href="https://dx.doi.org/10.17487/RFC5234">DOI 10.17487/RFC5234</a>, January 2008, &lt;<a href="https://www.rfc-editor.org/info/rfc5234">https://www.rfc-editor.org/info/rfc5234</a>&gt;.</dd><dt id="RFC7493">[<a href="#RFC7493" class="smpl">RFC7493</a>]</dt><dd>Bray, T., Ed., &#8220;<a href="https://www.rfc-editor.org/rfc/rfc7493.html">The I-JSON Message Format</a>&#8221;, RFC 7493, <a href="https://dx.doi.org/10.17487/RFC7493">DOI 10.17487/RFC7493</a>, March 2015, &lt;<a href="https://www.rfc-editor.org/info/rfc7493">https://www.rfc-editor.org/info/rfc7493</a>&gt;.</dd><dt id="RFC8259">[<a href="#RFC8259" class="smpl">RFC8259</a>]</dt><dd><a href="mailto:tbray@textuality.com">Bray, T., Ed.</a>, &#8220;<a href="https://www.rfc-editor.org/rfc/rfc8259.html">The JavaScript Object Notation (JSON) Data Interchange Format</a>&#8221;, RFC 8259, <a href="https://dx.doi.org/10.17487/RFC8259">DOI 10.17487/RFC8259</a>, December 2017.</dd><dt id="STRUCTURED-FIELDS">[<a href="#STRUCTURED-FIELDS" class="smpl">STRUCTURED-FIELDS</a>]</dt><dd><a href="mailto:mnot@mnot.net">Nottingham, M.</a> and <a href="mailto:phk@varnish-cache.org">P-H. Kamp</a>, &#8220;<a href="https://www.rfc-editor.org/rfc/rfc9651.html">Structured Field Values for HTTP</a>&#8221;, RFC 9651, September 2024, &lt;<a href="https://www.rfc-editor.org/info/rfc9651">https://www.rfc-editor.org/info/rfc9651</a>&gt;.</dd><dt id="UNICODE">[<a href="#UNICODE" class="smpl">UNICODE</a>]</dt><dd>The Unicode Consortium, &#8220;<a href="http://www.unicode.org/versions/latest/">The Unicode Standard</a>&#8221;, &lt;<a href="http://www.unicode.org/versions/latest/">http://www.unicode.org/versions/latest/</a>&gt;.</dd></dl></div></section><section><div id="rfc.references.2"><h3 id="rfc.section.10.2"><a href="#rfc.section.10.2">10.2.</a> Informative References</h3><dl class="reference"><dt id="ECMA-262">[<a href="#ECMA-262" class="smpl">ECMA-262</a>]</dt><dd>Ecma International, &#8220;<a href="http://www.ecma-international.org/ecma-262/6.0/">ECMA-262 6th Edition, The ECMAScript 2015 Language Specification</a>&#8221;, Standard ECMA-262, June 2015, &lt;<a href="http://www.ecma-international.org/ecma-262/6.0/">http://www.ecma-international.org/ecma-262/6.0/</a>&gt;.</dd><dt id="ISO-8859-1">[<a href="#ISO-8859-1" class="smpl">ISO-8859-1</a>]</dt><dd>International Organization for Standardization, &#8220;Information technology -- 8-bit single-byte coded graphic character sets -- Part 1: Latin alphabet No. 1&#8221;, ISO/IEC 8859-1:1998, 1998.</dd><dt id="RFC6365">[<a href="#RFC6365" class="smpl">RFC6365</a>]</dt><dd>Hoffman, P. and J. Klensin, &#8220;<a href="https://www.rfc-editor.org/rfc/rfc6365.html">Terminology Used in Internationalization in the IETF</a>&#8221;, <a href="https://www.rfc-editor.org/info/bcp166">BCP 166</a>, RFC 6365, <a href="https://dx.doi.org/10.17487/RFC6365">DOI 10.17487/RFC6365</a>, September 2011, &lt;<a href="https://www.rfc-editor.org/info/rfc6365">https://www.rfc-editor.org/info/rfc6365</a>&gt;.</dd><dt id="UNICHARS">[<a href="#UNICHARS" class="smpl">UNICHARS</a>]</dt><dd>Bray, T. and P. Hoffman, &#8220;<a href="https://datatracker.ietf.org/doc/html/draft-bray-unichars-11">Unicode Character Repertoire Subsets</a>&#8221;, <a href="https://datatracker.ietf.org/doc/draft-bray-unichars">Work in Progress</a>, Internet-Draft, draft-bray-unichars-11, March 2025.</dd><dt id="UTF-8">[<a href="#UTF-8" class="smpl">UTF-8</a>]</dt><dd>Yergeau, F., &#8220;<a href="https://www.rfc-editor.org/rfc/rfc3629.html">UTF-8, a transformation format of ISO 10646</a>&#8221;, <a href="https://www.rfc-editor.org/info/std63">STD 63</a>, RFC 3629, <a href="https://dx.doi.org/10.17487/RFC3629">DOI 10.17487/RFC3629</a>, November 2003, &lt;<a href="https://www.rfc-editor.org/info/rfc3629">https://www.rfc-editor.org/info/rfc3629</a>&gt;.</dd><dt id="XMLHttpRequest">[<a href="#XMLHttpRequest" class="smpl">XMLHttpRequest</a>]</dt><dd>WhatWG, &#8220;<a href="https://xhr.spec.whatwg.org/">XMLHttpRequest</a>&#8221;, &lt;<a href="https://xhr.spec.whatwg.org/">https://xhr.spec.whatwg.org/</a>&gt;.</dd></dl></div></section></section><section id="comparison"><h2 id="rfc.section.A" class="np"><a href="#rfc.section.A">Appendix A.</a>&nbsp;<a href="#comparison">Comparison with Structured Fields</a></h2><section id="n-base-types"><h3 id="rfc.section.A.1"><a href="#rfc.section.A.1">A.1.</a>&nbsp;<a href="#n-base-types">Base Types</a></h3><div class="tt"><table class="v3 tcenter"><caption>Table 1</caption><thead><tr><th class="left">Type</th><th class="left">in Structured Fields</th><th class="left">in JSON-based Fields</th></tr></thead><tbody><tr><th class="left" rowspan="2">Integer</th><td class="left"><a href="#STRUCTURED-FIELDS"><cite title="Structured Field Values for HTTP">[STRUCTURED-FIELDS]</cite></a>, <a href="rfc9651.html#integer">Section 3.3.1</a></td><td class="left"><a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>, <a href="rfc8259.html#rfc.section.6">Section 6</a></td></tr><tr><td class="left">(restricted to 15 digits)</td><td class="left"></td></tr><tr><th class="left" rowspan="2">Decimal</th><td class="left"><a href="#STRUCTURED-FIELDS"><cite title="Structured Field Values for HTTP">[STRUCTURED-FIELDS]</cite></a>, <a href="rfc9651.html#decimal">Section 3.3.2</a></td><td class="left"><a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>, <a href="rfc8259.html#rfc.section.6">Section 6</a></td></tr><tr><td class="left">(a fixed point decimal restricted to 12 + 3 digits)</td><td class="left"></td></tr><tr><th class="left" rowspan="2">String</th><td class="left"><a href="#STRUCTURED-FIELDS"><cite title="Structured Field Values for HTTP">[STRUCTURED-FIELDS]</cite></a>, <a href="rfc9651.html#string">Section 3.3.3</a> and <a href="#STRUCTURED-FIELDS"><cite title="Structured Field Values for HTTP">[STRUCTURED-FIELDS]</cite></a>, <a href="rfc9651.html#displaystring">Section 3.3.8</a></td><td class="left"><a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>, <a href="rfc8259.html#rfc.section.7">Section 7</a></td></tr><tr><td class="left">Strings only support ASCII (<a href="#RFC0020"><cite title="ASCII format for network interchange">[RFC0020]</cite></a>), but "Display Strings" cover anything encodable as <a href="#UTF-8"><cite title="UTF-8, a transformation format of ISO 10646">[UTF-8]</cite></a> (that excludes surrogates (<a href="https://datatracker.ietf.org/doc/html/draft-bray-unichars-11#section-2.2.1">Section 2.2.1</a> of <a href="#UNICHARS"><cite title="Unicode Character Repertoire Subsets">[UNICHARS]</cite></a>)).</td><td class="left">JSON strings can transport any Unicode code point, due to the "\uxxxx" escape notation.</td></tr><tr><th class="left">Token</th><td class="left"><a href="#STRUCTURED-FIELDS"><cite title="Structured Field Values for HTTP">[STRUCTURED-FIELDS]</cite></a>, <a href="rfc9651.html#token">Section 3.3.4</a></td><td class="left">not available, but can be mapped to strings</td></tr><tr><th class="left">Byte Sequence</th><td class="left"><a href="#STRUCTURED-FIELDS"><cite title="Structured Field Values for HTTP">[STRUCTURED-FIELDS]</cite></a>, <a href="rfc9651.html#binary">Section 3.3.5</a></td><td class="left">not available, usually mapped to strings using base64 encoding</td></tr><tr><th class="left">Boolean</th><td class="left"><a href="#STRUCTURED-FIELDS"><cite title="Structured Field Values for HTTP">[STRUCTURED-FIELDS]</cite></a>, <a href="rfc9651.html#boolean">Section 3.3.6</a></td><td class="left"><a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>, <a href="rfc8259.html#rfc.section.3">Section 3</a></td></tr><tr><th class="left">Date</th><td class="left"><a href="#STRUCTURED-FIELDS"><cite title="Structured Field Values for HTTP">[STRUCTURED-FIELDS]</cite></a>, <a href="rfc9651.html#date">Section 3.3.7</a></td><td class="left">not available, usually mapped to Strings or Numbers</td></tr></tbody></table></div><div id="rfc.section.A.1.p.1"><p>Structured Fields provide more data types (such as "token" or "byte sequence"). Numbers are restricted, avoiding the JSON interop problems described in <a href="#interop.numbers" title="Numbers">Section 7.2</a>.<a class="self" href="#rfc.section.A.1.p.1">&para;</a></p></div></section><section id="n-structures"><h3 id="rfc.section.A.2"><a href="#rfc.section.A.2">A.2.</a>&nbsp;<a href="#n-structures">Structures</a></h3><div id="rfc.section.A.2.p.1"><p>Structured Fields define Lists (<a href="#STRUCTURED-FIELDS"><cite title="Structured Field Values for HTTP">[STRUCTURED-FIELDS]</cite></a>, <a href="rfc9651.html#list">Section 3.1</a>), similar to JSON arrays (<a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>, <a href="rfc8259.html#rfc.section.5">Section 5</a>), and Dictionaries (<a href="#STRUCTURED-FIELDS"><cite title="Structured Field Values for HTTP">[STRUCTURED-FIELDS]</cite></a>, <a href="rfc9651.html#dictionary">Section 3.2</a>), similar to JSON objects (<a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a>, <a href="rfc8259.html#rfc.section.4">Section 4</a>).<a class="self" href="#rfc.section.A.2.p.1">&para;</a></p></div><div id="rfc.section.A.2.p.2"><p>In addition, most items in Structured Fields can be parametrized (<a href="#STRUCTURED-FIELDS"><cite title="Structured Field Values for HTTP">[STRUCTURED-FIELDS]</cite></a>, <a href="rfc9651.html#param">Section 3.1.2</a>), attaching a dictionary-like structure to the value. To emulate this in JSON based field, an additional nesting of objects would be needed.<a class="self" href="#rfc.section.A.2.p.2">&para;</a></p></div><div id="rfc.section.A.2.p.3"><p>Finally, nesting of data structures is intentionally limited to two levels (see <a href="rfc9651.html#why-not-json">Appendix A.1</a> of <a href="#STRUCTURED-FIELDS"><cite title="Structured Field Values for HTTP">[STRUCTURED-FIELDS]</cite></a> for the motivation).<a class="self" href="#rfc.section.A.2.p.3">&para;</a></p></div></section></section><section id="implementations"><h2 id="rfc.section.B"><a href="#rfc.section.B">Appendix B.</a>&nbsp;<a href="#implementations">Implementations</a></h2><div id="rfc.section.B.p.1"><p>See <a href="https://github.com/reschke/json-fields">https://github.com/reschke/json-fields</a> for a proof-of-concept (in development).<a class="self" href="#rfc.section.B.p.1">&para;</a></p></div></section><section id="acks"><h2 id="rfc.section.unnumbered-1"><a href="#acks">Acknowledgements</a></h2><div id="rfc.section.unnumbered-1.p.1"><p>Thanks go to the Hypertext Transfer Protocol Working Group participants.<a class="self" href="#rfc.section.unnumbered-1.p.1">&para;</a></p></div></section><section id="rfc.authors" class="avoidbreakinside"><h2><a href="#rfc.authors">Author's Address</a></h2><address><b>Julian F. Reschke</b><br>greenbytes GmbH<br>Hafenweg 16<br>M&uuml;nster, 48155<br>Germany<br>Email: <a href="mailto:julian.reschke@greenbytes.de">julian.reschke@greenbytes.de</a><br>URI: <a href="http://greenbytes.de/tech/webdav/">http://greenbytes.de/tech/webdav/</a></address></section></body></html>
