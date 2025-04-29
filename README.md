@@ -1,10 +1,7 @@
-# json-fields
-Tools for the HTTP JSON field syntax defined in Internet-Draft draft-reschke-http-jfv.
+# How to use JSON in HTTP header fields
 
-Links:
+Specification: https://reschke.github.io/json-fields/
 
-- https://greenbytes.de/tech/webdav/draft-reschke-http-jfv-latest.html
+## Sourcecode
 
-## Status
-
-This is entirely work-in-progress right now.
+This repository contains both the source code of the specification (in XML format), and a reference implementation in Java.
